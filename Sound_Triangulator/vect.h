@@ -9,10 +9,31 @@ struct Vect
         return ret;
     }
     
-    Vect operator -(const Vect& other)
+    Vect operator +=(const Vect& other)
     {
-        Vect ret = {x - other.x, y - other.y};
+        x += other.x;
+        y += other.y;
+    }
+    
+    Vect operator *(const float& other)
+    {
+        Vect ret = {x * other, y * other};
         return ret;
+    }
+    
+    float getLength()
+    {
+        return sqrt(x * x + y * y);
+    }
+
+    float getAngleBetween(Vect other)
+    {
+        return acos(getDot(other) / (getLength() * other.getLength()));
+    }
+
+    float getDot(Vect other)
+    {
+        return x * other.x + y * other.y;
     }
 };
 
