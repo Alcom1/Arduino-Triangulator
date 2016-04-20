@@ -11,7 +11,8 @@ unsigned int sample;         // Sample from mics
 
 const int inPins[] = {A0, A1, A2};          //Pins for analog input (potes, mics)
 const int outPins[] = {3, 5, 6, 11};        //Pins for LED outputs
-const bool isMics[] = {false, false, true}; //If each input is a mic
+const float inMin[] = {0.4, 0.22, 0.4};
+const float inMax[] = {2.25, 1.5, 2.25};
 
 //Vector location of the inputs
 Vect inLocs[] = {
@@ -65,15 +66,23 @@ void loop()
     for(int i = 0; i < 3; i++)
     {
         volts[i] = ((maxs[i] - mins[i]) * 3.3) / 1024;  // convert to volts
+        Serial.print(volts[i]);
+        Serial.print("\t");
     }
+
+    Serial.println();
     
     //Add inputs to total.
     for(int i = 0; i < 3; i++)
     {
-        if(isMics[i])
-            inTots += inLocs[i] * mapFloat(max(volts[i], 0), 0.0, 2.25, 0, 1);
-        else
-            inTots += inLocs[i] * mapFloat(analogRead(inPins[i]), 0, 1023, 0, 1);
+        inTots += inLocs[i] * max(
+          mapFloat(
+            volts[i],
+            inMin[i],
+            inMax[i],
+            0,
+            1),
+          0);
     }
 
     //If total is not close to zero, light up the LEDs in its direction.
